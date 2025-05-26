@@ -9,13 +9,13 @@ from email.mime.image import MIMEImage
 from dotenv import load_dotenv
 
 # ⚙️ Načtení přihlašovacích údajů z .env
-load_dotenv(dotenv_path="C:/Users/AdminPRAXE/Desktop/email_provider/.env")
+load_dotenv(dotenv_path="C://Desktop//.env")
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 465))
-EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS", "fotopast99r@gmail.com")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "vqgs lcyr zeim bnhb")
-TO_EMAIL = os.getenv("TO_EMAIL", "opicipolivka123@seznam.cz")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "port serveru"))
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS", "z jakeho emailu")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "app heslo") #heslo pro appku na gmailu
+TO_EMAIL = os.getenv("TO_EMAIL", "na jakej email")
 
 WATCH_FOLDER = "all_synced_captures_flat"
 CHECK_INTERVAL = 5  # vteřiny
