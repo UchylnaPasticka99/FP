@@ -1,1 +1,1 @@
-qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in "/home/tbrezina/.local/lib/python3.13/site-packages/cv2/qt/plugins"
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in "/home/.../.local/lib/python3.13/site-packages/cv2/qt/plugins"
