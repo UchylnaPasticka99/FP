@@ -1,0 +1,63 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Program se zapne ze souboru startSkriptCZ.SH (!./startSkriptCZ.SH" pro zapnutí)
+
+startSkriptCZ/ENG.sh :
+    Skript spustí všechny tři skripta Pythonu pro chod aplikace (email_provider.py, detektor.py, photoMover.py)
+    Skript streamuje všechny výpisy z Python skriptů
+    Všechny výpisy ukládá do LogArchive (lastLog je souhrn všech posledních logů pro jednoduchou dostupnost)
+    Vypnutím skriptu se vypnou i všechny procesy
+    
+killSkriptCZ/ENG.sh :
+    Spuštěním dá kill příkaz na všechny běžící procesy a vypne je
+    Redundantní
+
+Funkční skripty programu:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+detektor.py------------------------------------------
+    Dělá záznam, pracuje s kamerou, detekuje pohyb
+
+
+    Z několika fotek (dle nastavení) se průběžně aktualizuje "podmasku"
+    "Podmaska" se aktualizuje, kvůli např. změně světla (venkovní využití), nebo kvůli jiným pomalu se měnícím jevům
+    "Podmaska" zamezuje chybným vyhodnocením pohybu
+    Veškeré uložené obrázky ukládá do (Defaultně pojmenované:) "longterm_motion_captures"
+    Uložení fotek má mezi sebou interval (defaultně 5 sekund)
+    Vytváří csv soubor se soupisem časů detekce pohybu
+
+    V programu jsou v základu 4 režimy zobrazení (okna), která vizualizují různé fáze detekce pohybu:
+        Color Frame :
+            Zobrazuje původní, nezpracovaný barevný snímek přímo z kamery. Toto je aktuální pohled, který program analyzuje
+            Zelenými obdelníky zvýrazňuje pohyb
+
+        Averaged Background :
+            Ukazuje model pozadí, který si program dynamicky vytváří a aktualizuje. Je to průměr několika posledních snímků převedených do odstínů šedi a rozmazaných. 
+            Tento snímek reprezentuje statickou část scény a slouží jako reference pro detekci změn
+
+        Difference Frame :
+            Vzniká odečtením aktuálního snímku (v odstínech šedi a rozmazaného) od "Averaged Background". 
+            Světlé oblasti v tomto okně indikují místa, kde se aktuální snímek liší od naučeného pozadí, což potenciálně značí pohyb.
+
+        Threshold Frame :
+            Je výsledkem aplikace prahové hodnoty na "Difference Frame". Pixely, jejichž hodnota v rozdílovém snímku překročí nastavený práh, 
+            jsou zobrazeny bíle, ostatní černě. Tento binární obraz zvýrazňuje oblasti s dostatečně velkou změnou (pohybem) 
+            a je dále použit pro nalezení kontur pohybujících se objektů.
+
+
+photoMover.py------------------------------------------
+    Přesouvá fotky mezi dlouhodobým skladištěm a dočasným skladištěm
+
+
+    V intervalu kontroluje soubor "once_copied.txt"
+    "once_copied.txt" obsahuje názvy všech souborů, které byli již jednou přesunuty z dlouhodobého skladiště
+    Jestli se v dlouhodobém skladišti  nachází fotka, který nebyla nikdy přesunuta, skript jí přesune do krátkodobého uložiště pro odeslání
+
+email_provider.py------------------------------------------
+    Posílá mail s upozorněním na pohyb a fotky z krátkodobého uložiště
+
+
+    Natavuje se připojení na emailovou adresu odesílatele a odesílaného
+    Sleduje určenou složku (defaultně "all_synced_captures_flat")
+    V pravidelných intervalech (defaultně 5 sekund) kontroluje obsah této složky.
+    Obrázky se odesílají v dávkách. Mezi odesláním jednotlivých dávek e-mailů je minimální prodleva (defaultně 3 minuty).
+    Toto zabraňuje zahlcení e-mailové schránky a případnému blokování ze strany e-mailového poskytovatele.
+    Fotky z krátkodobého uložiště po úspěšném odeslání smaže

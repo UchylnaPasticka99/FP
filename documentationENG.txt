@@ -1,0 +1,68 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The program is started from the startSkriptENG.SH file (!./startSkriptENG.SH" to start)
+
+startSkriptCZ/ENG.sh :
+    The script starts all three Python scripts for the application to run (email_provider.py, detektor.py, photoMover.py)
+    The script streams all outputs from the Python scripts
+    All outputs are saved to LogArchive (lastLog is a summary of all the latest logs for easy access)
+    Turning off the script also turns off all processes
+
+killSkriptCZ/ENG.sh :
+    Running it sends a kill command to all running processes and shuts them down
+    Redundant
+
+Functional scripts of the program:+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+detektor.py------------------------------------------
+    Records, works with the camera, detects motion
+
+        
+    From several photos (according to settings), the "averaged background" is continuously updated
+    The "averaged background" is updated, for example, due to changes in light (outdoor use), or due to other slowly changing phenomena
+    The "averaged background" prevents incorrect motion evaluation
+    All saved images are stored in (Default name:) "longterm_motion_captures"
+    Saving photos has an interval between them (default 5 seconds)
+    Creates CSV file with list of movement ordered by time
+
+    The program has 4 basic display modes (windows) that visualize different phases of motion detection:
+        Color Frame :
+            Displays the original, unprocessed color frame directly from the camera. This is the current view that the program analyzes.
+            Highlights motion with green rectangles.
+
+        Averaged Background :
+            Shows the background model that the program dynamically creates and updates. It is an average of several recent frames converted to grayscale and blurred.
+            This frame represents the static part of the scene and serves as a reference for change detection.
+
+        Difference Frame :
+            It is created by subtracting the current frame (grayscale and blurred) from the "Averaged Background".
+            Bright areas in this window indicate places where the current frame differs from the learned background, potentially indicating motion.
+
+        Threshold Frame :
+            It is the result of applying a threshold to the "Difference Frame". Pixels whose value in the difference frame exceeds the set threshold,
+            are displayed as white, others as black. This binary image highlights areas with a sufficiently large change (motion)
+            and is further used to find contours of moving objects.
+
+    
+
+
+
+photoMover.py------------------------------------------
+    Moves photos between long-term storage and temporary storage
+
+
+    At intervals, it checks the "once_copied.txt" file
+    "once_copied.txt" contains the names of all files that have already been moved once from long-term storage
+    If a photo is found in long-term storage that has never been moved, the script moves it to temporary storage for sending
+
+email_provider.py------------------------------------------
+    Sends an email with a motion alert and photos from temporary storage
+   
+
+    Sets email adresses for sender and reciever
+    Monitors a specified folder (default "all_synced_captures_flat")
+    At regular intervals (default 5 seconds), it checks the content of this folder.
+    Images are sent in batches. There is a minimum delay between sending individual email batches (default 3 minutes).
+    This prevents overloading the email inbox and potential blocking by the email provider.
+    Deletes photos from temporary storage after successful sending.
+
+        
